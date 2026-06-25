@@ -1,0 +1,47 @@
+site_name: NSE Knowledge Base
+site_description: Narrative Systems Engineer — Governed Knowledge Repository
+site_author: qt314wink
+docs_dir: .
+site_dir: _site
+exclude_docs: |
+  07_archive/
+  .obsidian/
+  scripts/
+  .github/
+  _site/
+  *.pyc
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: deep purple
+    accent: cyan
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.annotate
+
+plugins:
+  - search
+  - tags
+
+markdown_extensions:
+  - tables
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - meta
+  - toc:
+      permalink: true
+
+nav:
+  - Home: README.md
+  - System:
+    - Taxonomy & Naming: 00_system/2026-06-22__system__taxonomy-naming-convention__canonical.md
+    - Service Taxonomy: 00_system/2026-06-22__system__service-taxonomy__canonical.md
+  - Templates: 06_templates/

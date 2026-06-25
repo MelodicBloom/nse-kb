@@ -1,0 +1,13 @@
+.obsidian/workspace*
+.obsidian/cache/
+.obsidian/plugins/obsidian-git/
+*.bak
+.DS_Store
+__pycache__/
+*.pyc
+.env
+.env.local
+_site/
+site/
+.venv/
+venv/
