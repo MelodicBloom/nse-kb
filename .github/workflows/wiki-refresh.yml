@@ -1,0 +1,25 @@
+name: Refresh Read Layer (Wiki.js / MkDocs)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**.md"
+      - "08_assets/**"
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger wiki/docs refresh webhook
+        run: |
+          curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "X-KB-Token: ${{ secrets.KB_WEBHOOK_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"ref":"main","repo":"nse-kb"}' \
+            ${{ secrets.WIKI_WEBHOOK_URL }} \
+          | grep -qE '^(200|201|204)$' && echo "Webhook delivered." \
+          || echo "Webhook not configured or unreachable — add WIKI_WEBHOOK_URL secret to enable."
+        # To activate: add WIKI_WEBHOOK_URL + KB_WEBHOOK_TOKEN in repo secrets.
+        # Docs: github.com/qt314wink/nse-kb/settings/secrets/actions
+        continue-on-error: true
