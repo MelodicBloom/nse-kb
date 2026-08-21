@@ -1,11 +1,17 @@
-name: Validate KB Front-Matter
+name: Validate NSE Knowledge + Skills
 
 on:
   push:
     branches: [main]
-    paths: ["**.md"]
+    paths:
+      - "**.md"
+      - "scripts/validate_frontmatter.py"
+      - "scripts/validate_skills.py"
   pull_request:
-    paths: ["**.md"]
+    paths:
+      - "**.md"
+      - "scripts/validate_frontmatter.py"
+      - "scripts/validate_skills.py"
 
 jobs:
   validate:
@@ -20,5 +26,8 @@ jobs:
       - name: Install dependencies
         run: pip install python-frontmatter -q
 
-      - name: Validate front-matter
+      - name: Validate NSE knowledge-note front matter
         run: python scripts/validate_frontmatter.py
+
+      - name: Validate executable Agent Skills
+        run: python scripts/validate_skills.py
