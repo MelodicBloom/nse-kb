@@ -9,5 +9,6 @@ __pycache__/
 .env.local
 _site/
 site/
+.mkdocs-docs/
 .venv/
 venv/
