@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - "**.md"
+      - "mkdocs.yml"
       - "scripts/validate_frontmatter.py"
       - "scripts/validate_skills.py"
   pull_request:
     paths:
       - "**.md"
+      - "mkdocs.yml"
       - "scripts/validate_frontmatter.py"
       - "scripts/validate_skills.py"
 
@@ -24,10 +26,13 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install python-frontmatter -q
+        run: pip install python-frontmatter mkdocs-material -q
 
       - name: Validate NSE knowledge-note front matter
         run: python scripts/validate_frontmatter.py
 
       - name: Validate executable Agent Skills
         run: python scripts/validate_skills.py
+
+      - name: Build human-readable knowledge surface
+        run: mkdocs build --strict
