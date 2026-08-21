@@ -49,7 +49,7 @@ nav:
   - Methods:
     - Recovering Governed Reconciliations: 09_methods/recovering-governed-reconciliations/2026-08-21__method__recovering-governed-reconciliations__canonical.md
   - Case Studies:
-    - Seed Loom PR #26 Recovery: 04_reports/case-studies/2026-08-21__report__seed-loom-pr26-recovery__verified.md
+    - "Seed Loom PR #26 Recovery": 04_reports/case-studies/2026-08-21__report__seed-loom-pr26-recovery__verified.md
   - Executable Skills:
     - Recovering Governed Reconciliations: skills/recovering-governed-reconciliations/SKILL.md
   - Templates:
