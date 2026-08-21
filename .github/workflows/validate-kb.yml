@@ -8,12 +8,14 @@ on:
       - "mkdocs.yml"
       - "scripts/validate_frontmatter.py"
       - "scripts/validate_skills.py"
+      - "scripts/prepare_mkdocs_projection.py"
   pull_request:
     paths:
       - "**.md"
       - "mkdocs.yml"
       - "scripts/validate_frontmatter.py"
       - "scripts/validate_skills.py"
+      - "scripts/prepare_mkdocs_projection.py"
 
 jobs:
   validate:
@@ -33,6 +35,9 @@ jobs:
 
       - name: Validate executable Agent Skills
         run: python scripts/validate_skills.py
+
+      - name: Prepare human-readable knowledge projection
+        run: python scripts/prepare_mkdocs_projection.py
 
       - name: Build human-readable knowledge surface
         run: mkdocs build --strict
