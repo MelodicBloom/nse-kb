@@ -184,7 +184,7 @@ The knowledge validator enforces the legacy schema plus method-specific IDs, mat
 | Secret | Purpose |
 |--------|---------|
 | `NOTION_TOKEN` | Notion internal integration token |
-| `NOTION_DATABASE_ID` | Notion Notes database ID |
+| `NOTION_NOTES_DB_ID` | Notion Notes database ID |
 | `KB_WEBHOOK_TOKEN` | Auth token for wiki refresh webhook |
 | `WIKI_WEBHOOK_URL` | Wiki/MkDocs deploy hook |
 

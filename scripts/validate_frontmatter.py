@@ -7,6 +7,7 @@ by `scripts/validate_skills.py`. Implementation/planning docs under `docs/`
 are likewise outside the canonical NSE note schema.
 """
 
+import re
 import sys
 from pathlib import Path
 
@@ -31,10 +32,11 @@ ALLOWED_RELATION_TYPES = {
     "derived-from", "evidenced-by", "implemented-as", "compared-with",
     "applied-in", "validated-by", "supersedes", "superseded-by"
 }
+METHOD_ID_RE = re.compile(r"^method:[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 SKIP_DIRS = {
     ".obsidian", "07_archive", ".git", "node_modules", "__pycache__",
-    "_site", "site", "skills", "docs"
+    "_site", "site", ".mkdocs-docs", "skills", "docs"
 }
 SKIP_FILES = {"README.md"}
 
@@ -101,8 +103,11 @@ for md in sorted(Path(".").rglob("*.md")):
         method_id = meta.get("id")
         maturity = meta.get("maturity")
 
-        if not isinstance(method_id, str) or not method_id.startswith("method:"):
-            errors.append(f"{md}: method records require stable `id` beginning with `method:`")
+        if not isinstance(method_id, str) or not METHOD_ID_RE.fullmatch(method_id):
+            errors.append(
+                f"{md}: method records require stable `id` matching "
+                "`method:<lowercase-kebab-case>`"
+            )
         else:
             if method_id in method_ids:
                 errors.append(f"{md}: duplicate method id `{method_id}` also used by {method_ids[method_id]}")

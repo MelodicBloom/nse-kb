@@ -14,6 +14,7 @@ except ImportError:
 
 SKILLS_DIR = Path("skills")
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+MAX_NAME_LENGTH = 64
 errors = []
 checked = 0
 
@@ -33,6 +34,8 @@ if SKILLS_DIR.exists():
 
         if not isinstance(name, str) or not name:
             errors.append(f"{skill_file}: missing required string `name`")
+        elif len(name) > MAX_NAME_LENGTH:
+            errors.append(f"{skill_file}: `name` exceeds {MAX_NAME_LENGTH} characters")
         elif not NAME_RE.fullmatch(name):
             errors.append(f"{skill_file}: `name` must use lowercase letters, numbers, and hyphens")
         elif name != directory_name:

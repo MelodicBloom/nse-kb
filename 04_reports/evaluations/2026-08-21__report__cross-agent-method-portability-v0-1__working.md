@@ -10,10 +10,10 @@ confidence: medium
 owner: "operator"
 version: 1
 related:
-  - "00_system/2026-08-21__system__evidence-backed-method-model__canonical.md"
-  - "09_methods/recovering-governed-reconciliations/2026-08-21__method__recovering-governed-reconciliations__canonical.md"
-  - "04_reports/case-studies/2026-08-21__report__seed-loom-pr26-recovery__verified.md"
-  - "skills/recovering-governed-reconciliations/SKILL.md"
+  - "../../00_system/2026-08-21__system__evidence-backed-method-model__canonical.md"
+  - "../../09_methods/recovering-governed-reconciliations/2026-08-21__method__recovering-governed-reconciliations__canonical.md"
+  - "../case-studies/2026-08-21__report__seed-loom-pr26-recovery__verified.md"
+  - "../../skills/recovering-governed-reconciliations/SKILL.md"
 ---
 
 # Cross-Agent Method Portability Evaluation v0.1
