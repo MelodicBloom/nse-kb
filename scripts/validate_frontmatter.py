@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Validate front-matter schema across all KB markdown files.
-Run as pre-commit hook or CI step.
+Validate NSE knowledge-note front-matter schema.
 
-Usage:
-  python3 scripts/validate_frontmatter.py
+Executable Agent Skills under `skills/` use a separate schema and are checked
+by `scripts/validate_skills.py`. Implementation/planning docs under `docs/`
+are likewise outside the canonical NSE note schema.
 """
+
+import re
 import sys
 from pathlib import Path
 
@@ -13,24 +15,34 @@ try:
     import frontmatter
 except ImportError:
     import subprocess
-    subprocess.run([sys.executable, "-m", "pip", "install", "python-frontmatter", "-q"])
+    subprocess.run([sys.executable, "-m", "pip", "install", "python-frontmatter", "-q"], check=True)
     import frontmatter
 
 REQUIRED_FIELDS = [
     "title", "status", "domain", "freshness", "last_reviewed",
     "source_scope", "tags", "confidence", "version"
 ]
-ALLOWED_STATUS     = {"canonical", "draft", "archive", "verified", "capture", "working", "template"}
-ALLOWED_DOMAIN     = {"research", "competitor", "technical", "report", "project", "template", "system", "asset"}
-ALLOWED_FRESHNESS  = {"current", "review-needed", "archival"}
-ALLOWED_SOURCE     = {"internal-only", "external-verified", "mixed"}
+ALLOWED_STATUS = {"canonical", "draft", "archive", "verified", "capture", "working", "template"}
+ALLOWED_DOMAIN = {"research", "competitor", "technical", "report", "project", "template", "system", "asset", "method"}
+ALLOWED_FRESHNESS = {"current", "review-needed", "archival"}
+ALLOWED_SOURCE = {"internal-only", "external-verified", "mixed"}
 ALLOWED_CONFIDENCE = {"high", "medium", "low"}
+ALLOWED_METHOD_MATURITY = {"candidate", "field-tested", "transferred", "canonical", "deprecated"}
+ALLOWED_RELATION_TYPES = {
+    "derived-from", "evidenced-by", "implemented-as", "compared-with",
+    "applied-in", "validated-by", "supersedes", "superseded-by"
+}
+METHOD_ID_RE = re.compile(r"^method:[a-z0-9]+(?:-[a-z0-9]+)*$")
 
-SKIP_DIRS  = {".obsidian", "07_archive", ".git", "node_modules", "__pycache__", "_site", "site"}
+SKIP_DIRS = {
+    ".obsidian", "07_archive", ".git", "node_modules", "__pycache__",
+    "_site", "site", ".mkdocs-docs", "skills", "docs"
+}
 SKIP_FILES = {"README.md"}
 
-errors  = []
+errors = []
 checked = 0
+method_ids = {}
 
 for md in sorted(Path(".").rglob("*.md")):
     if any(skip in md.parts for skip in SKIP_DIRS):
@@ -43,8 +55,8 @@ for md in sorted(Path(".").rglob("*.md")):
     try:
         post = frontmatter.load(md)
         meta = post.metadata
-    except Exception as e:
-        errors.append(f"{md}: front-matter parse error: {e}")
+    except Exception as exc:
+        errors.append(f"{md}: front-matter parse error: {exc}")
         continue
 
     checked += 1
@@ -53,11 +65,11 @@ for md in sorted(Path(".").rglob("*.md")):
         if field not in meta:
             errors.append(f"{md}: missing required field `{field}`")
 
-    if meta.get("status")     not in ALLOWED_STATUS:
+    if meta.get("status") not in ALLOWED_STATUS:
         errors.append(f"{md}: invalid status `{meta.get('status')}` — allowed: {sorted(ALLOWED_STATUS)}")
-    if meta.get("domain")     not in ALLOWED_DOMAIN:
+    if meta.get("domain") not in ALLOWED_DOMAIN:
         errors.append(f"{md}: invalid domain `{meta.get('domain')}` — allowed: {sorted(ALLOWED_DOMAIN)}")
-    if meta.get("freshness")  not in ALLOWED_FRESHNESS:
+    if meta.get("freshness") not in ALLOWED_FRESHNESS:
         errors.append(f"{md}: invalid freshness `{meta.get('freshness')}` — allowed: {sorted(ALLOWED_FRESHNESS)}")
     if meta.get("source_scope") not in ALLOWED_SOURCE:
         errors.append(f"{md}: invalid source_scope `{meta.get('source_scope')}` — allowed: {sorted(ALLOWED_SOURCE)}")
@@ -68,11 +80,54 @@ for md in sorted(Path(".").rglob("*.md")):
     if not isinstance(meta.get("version", 1), (int, float)):
         errors.append(f"{md}: `version` must be a number")
 
-print(f"Checked {checked} file(s).")
+    relations = meta.get("relations")
+    if relations is not None:
+        if not isinstance(relations, list):
+            errors.append(f"{md}: `relations` must be a YAML list")
+        else:
+            for index, relation in enumerate(relations):
+                if not isinstance(relation, dict):
+                    errors.append(f"{md}: relations[{index}] must be a mapping")
+                    continue
+                relation_type = relation.get("type")
+                target = relation.get("target")
+                if relation_type not in ALLOWED_RELATION_TYPES:
+                    errors.append(
+                        f"{md}: relations[{index}].type `{relation_type}` invalid — "
+                        f"allowed: {sorted(ALLOWED_RELATION_TYPES)}"
+                    )
+                if not isinstance(target, str) or not target.strip():
+                    errors.append(f"{md}: relations[{index}].target must be a non-empty string")
+
+    if meta.get("domain") == "method":
+        method_id = meta.get("id")
+        maturity = meta.get("maturity")
+
+        if not isinstance(method_id, str) or not METHOD_ID_RE.fullmatch(method_id):
+            errors.append(
+                f"{md}: method records require stable `id` matching "
+                "`method:<lowercase-kebab-case>`"
+            )
+        else:
+            if method_id in method_ids:
+                errors.append(f"{md}: duplicate method id `{method_id}` also used by {method_ids[method_id]}")
+            else:
+                method_ids[method_id] = md
+
+        if maturity not in ALLOWED_METHOD_MATURITY:
+            errors.append(
+                f"{md}: method records require valid `maturity` — "
+                f"allowed: {sorted(ALLOWED_METHOD_MATURITY)}"
+            )
+
+        if not isinstance(relations, list):
+            errors.append(f"{md}: method records require a `relations` YAML list")
+
+print(f"Checked {checked} NSE knowledge file(s).")
 if errors:
-    print(f"\n\u274c {len(errors)} front-matter error(s):\n")
-    for e in errors:
-        print(f"  - {e}")
+    print(f"\n❌ {len(errors)} front-matter error(s):\n")
+    for error in errors:
+        print(f"  - {error}")
     sys.exit(1)
-else:
-    print("\u2705 All front-matter valid.")
+
+print("✅ All NSE knowledge-note front-matter valid.")

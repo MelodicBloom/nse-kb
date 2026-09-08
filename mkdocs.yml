@@ -1,15 +1,8 @@
 site_name: NSE Knowledge Base
-site_description: Narrative Systems Engineer — Governed Knowledge Repository
-site_author: qt314wink
-docs_dir: .
+site_description: Narrative Systems Engineering — Governed Knowledge and Methods Repository
+site_author: MelodicBloom / qt314wink
+docs_dir: .mkdocs-docs
 site_dir: _site
-exclude_docs: |
-  07_archive/
-  .obsidian/
-  scripts/
-  .github/
-  _site/
-  *.pyc
 
 theme:
   name: material
@@ -44,4 +37,17 @@ nav:
   - System:
     - Taxonomy & Naming: 00_system/2026-06-22__system__taxonomy-naming-convention__canonical.md
     - Service Taxonomy: 00_system/2026-06-22__system__service-taxonomy__canonical.md
-  - Templates: 06_templates/
+    - Evidence-Backed Method Model: 00_system/2026-08-21__system__evidence-backed-method-model__canonical.md
+  - Methods:
+    - Recovering Governed Reconciliations: 09_methods/recovering-governed-reconciliations/2026-08-21__method__recovering-governed-reconciliations__canonical.md
+  - Case Studies:
+    - "Seed Loom PR #26 Recovery": 04_reports/case-studies/2026-08-21__report__seed-loom-pr26-recovery__verified.md
+  - Executable Skills:
+    - Recovering Governed Reconciliations: skills/recovering-governed-reconciliations/SKILL.md
+  - Templates:
+    - Method Dossier: 06_templates/method-dossier-template.md
+    - Research Brief: 06_templates/research-brief-template.md
+    - Technical Verification: 06_templates/technical-verification-template.md
+    - Project Context: 06_templates/project-context-template.md
+    - Competitor Capture: 06_templates/competitor-capture-template.md
+    - Grant Progress Report: 06_templates/grant-progress-report-template.md
